@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطعم MIMO - القائمة الرسمية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0d0d0d;
+            color: #f3f4f6;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ef4444;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #dc2626;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-red-500 selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-neutral-800 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- Logo & WhatsApp Mobile Button -->
+            <div class="w-full md:w-auto flex items-center justify-between">
+                <a href="#" class="flex items-center gap-2 group">
+                    <span class="text-3xl font-extrabold tracking-wider text-red-500 group-hover:text-red-400 transition-colors">MIMO</span>
+                    <span class="text-xs bg-red-950/80 text-red-400 border border-red-800/50 px-2 py-0.5 rounded-full font-semibold">RESTAURANT</span>
+                </a>
+                
+                <!-- WhatsApp Mobile Top Call -->
+                <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أستفسر%20عن%20منيو%20مطعم%20MIMO" 
+                   target="_blank" 
+                   class="md:hidden inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded-full transition-all duration-200">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>تواصل</span>
+                </a>
+            </div>
+
+            <!-- Interactive Search Bar -->
+            <div class="w-full md:max-w-md relative">
+                <div class="relative flex items-center">
+                    <input type="text" 
+                           id="searchInput" 
+                           onkeyup="filterMenu()" 
+                           placeholder="ابحث عن وجبة أو مكوّن (مثال: كفتة، شاورما، بامية)..." 
+                           class="w-full bg-neutral-900 text-neutral-100 text-sm pl-4 pr-10 py-2.5 rounded-xl border border-neutral-800 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none transition-all duration-200 placeholder-neutral-500">
+                    <i class="fa-solid fa-magnifying-glass absolute right-3.5 text-neutral-500 text-sm"></i>
+                    <button id="clearSearch" onclick="resetSearch()" class="hidden absolute left-3 text-neutral-500 hover:text-neutral-300 text-sm">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- WhatsApp Button Desktop -->
+            <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أستفسر%20عن%20منيو%20مطعم%20MIMO" 
+               target="_blank" 
+               class="hidden md:inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-950/30">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+                <span>تواصل واتساب</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-b from-neutral-900 to-neutral-950 py-12 md:py-16 border-b border-neutral-800/60 overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ef4444_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-4xl mx-auto text-center px-4 relative z-10">
+            <span class="inline-block px-3 py-1 bg-red-500/10 border border-red-500/20 text-red-400 text-xs md:text-sm font-semibold rounded-full mb-3">
+                🔥 طعم حقيقي على أصوله
+            </span>
+            <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
+                قائمة طعام مطعم <span class="text-red-500 underline decoration-red-500/40 underline-offset-8">MIMO</span>
+            </h1>
+            <p class="text-neutral-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                أصل المشويات العبقرية على الفحم والحطب، الشاورما السورية، والأكلات الشعبية المصرية المسبكة! أطلب وجبتك الآن وتوصلك مباشرة على الواتساب.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content Menu -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
+
+        <!-- Search Results Count Counter -->
+        <div id="searchStats" class="hidden mb-6 text-sm text-neutral-400 bg-neutral-900/80 px-4 py-2.5 rounded-lg border border-neutral-800 flex justify-between items-center">
+            <span>نتائج البحث عن: <strong id="searchQueryText" class="text-red-400"></strong></span>
+            <span id="resultsCount" class="font-bold text-neutral-200"></span>
+        </div>
+
+        <!-- No Results Fallback -->
+        <div id="noResults" class="hidden text-center py-16 bg-neutral-900/40 rounded-2xl border border-neutral-800/80 my-8">
+            <div class="w-16 h-16 bg-neutral-800 text-neutral-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-utensils"></i>
+            </div>
+            <h3 class="text-lg font-bold text-neutral-200 mb-1">لم نجد أي وجبة تطابق بحثك</h3>
+            <p class="text-neutral-400 text-sm mb-4">جرب البحث باستخدام كلمات أخرى مثل (مشويات، حواوشي، كريب)</p>
+            <button onclick="resetSearch()" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
+                عرض كل المنيو
+            </button>
+        </div>
+
+        <!-- 1. المشويات -->
+        <section class="menu-category mb-12">
+            <div class="flex items-center gap-3 mb-3 border-b border-red-500/30 pb-3">
+                <span class="text-2xl">🥩</span>
+                <div>
+                    <h2 class="text-xl md:text-2xl font-extrabold text-white">المشويات العبقرية <span class="text-red-500 text-sm font-normal">(على الفحم الحطب)</span></h2>
+                    <p class="text-xs text-neutral-400 mt-0.5">كل المشويات بتنزل مع عيش تازة، سلطة خضراء، طحينة، وسلطة بابا غنوج.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-4">
+                <!-- Card 1 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">مكس مشويات الكينج</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">320 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">سيخ كفتة، سيخ شيش طاووق، قطعة ريش، ¼ فرخة مشوية.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(مكس%20مشويات%20الكينج)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">كفتة ضاني على طريقة الحاتي</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">180 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">أصابع كفتة متبلة بالخلطة السرية.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(كفتة%20ضاني%20على%20طريقة%20الحاتي)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">شيش طاووق سوري أصلي</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">160 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">مكعبات فراخ متبلة بالثوم والزبادي وعليها صوص الثومية الخرافي.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(شيش%20طاووق%20سوري%20أصلي)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">طرب مشوي على الفحم</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">210 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">لحمة ملفوفة في منديل ضاني طرية ودايبة.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(طرب%20مشوي%20على%20الفحم)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. السندوتشات السريعة -->
+        <section class="menu-category mb-12">
+            <div class="flex items-center gap-3 mb-3 border-b border-red-500/30 pb-3">
+                <span class="text-2xl">🌯</span>
+                <div>
+                    <h2 class="text-xl md:text-2xl font-extrabold text-white">السندوتشات السريعة <span class="text-red-500 text-sm font-normal">(ع السريع بس طعم عالي)</span></h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-4">
+                <!-- Card 1 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">شاورما دجاج سوري (صاج أو كيزر)</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">75 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">فراخ شاورما مع الثومية والبطاطس والمخلل المقرمش.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(شاورما%20دجاج%20سوري)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">شاورما لحم سوري</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">85 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">لحمة مظبوطة مع الطحينة والبقدونس والبصل والسماق.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(شاورما%20لحم%20سوري)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">حواوشي إسكندراني بالجبنة</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">90 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">لحم مفروم بلدي متبل في عجينة طازجة في الفرن.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(حواوشي%20إسكندراني%20بالجبنة)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">طاسة كبدة إسكندراني</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">70 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">كبدة بلدي بالفلفل الحار والثوم والكمون والعيش البلدي الساخن.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(طاسة%20كبدة%20إسكندراني)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. الأكلات الشعبية -->
+        <section class="menu-category mb-12">
+            <div class="flex items-center gap-3 mb-3 border-b border-red-500/30 pb-3">
+                <span class="text-2xl">🍲</span>
+                <div>
+                    <h2 class="text-xl md:text-2xl font-extrabold text-white">الأكلات الشعبية المصرية الأصيلة</h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-4">
+                <!-- Card 1 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">كشري ملكي</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">65 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">الرز، المكرونة، العدس الأسود، البصل المقرمش، الدقة الحارة، والصلصة على اصولها.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(كشري%20ملكي)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">طاجن بامية باللحمة البلدي</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">150 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">في الفرن الفخار مع طشة الثوم والكزبرة.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(طاجن%20بامية%20باللحمة%20البلدي)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">ملوخية بالفراخ البلدية</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">130 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">ملوخية طازجة مفروكة بالطشة الصح وراكبة مع أرز شعري.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(ملوخية%20بالفراخ%20البلدية)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">فتة عجل بالخل والثوم</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">140 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">أرز محمر، عيش مقرمش، شوربة سمينة، وخلطة صلصة بالخل والثوم.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(فتة%20عجل%20بالخل%20والثوم)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. المقبلات والشوربات -->
+        <section class="menu-category mb-12">
+            <div class="flex items-center gap-3 mb-3 border-b border-red-500/30 pb-3">
+                <span class="text-2xl">🥗</span>
+                <div>
+                    <h2 class="text-xl md:text-2xl font-extrabold text-white">المقبلات والشوربات</h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-4">
+                <!-- Card 1 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">فتة شاورما سورية (دجاج أو لحم)</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">120 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">طبقات الرز البسمتي، العيش المحمص، الشاورما، وصوص الثومية والرمان.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(فتة%20شاورما%20سورية)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">سلطة تبولة شامية</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">45 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">برغل دقيق، بقدونس مفروم، طماطم، نعناع، زيت زيتون وليمون.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(سلطة%20تبولة%20شامية)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">حمص الشام (الحلاب)</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">40 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">حمص ناعم مع زيت الزيتون والكمون.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(حمص%20الشام)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">شوربة لسان عصفور</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">30 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">بالشوربة السمينة والليمون.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(شوربة%20لسان%20عصفور)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. الحلويات -->
+        <section class="menu-category mb-12">
+            <div class="flex items-center gap-3 mb-3 border-b border-red-500/30 pb-3">
+                <span class="text-2xl">🍮</span>
+                <div>
+                    <h2 class="text-xl md:text-2xl font-extrabold text-white">الحلويات <span class="text-red-500 text-sm font-normal">(مسك الختام)</span></h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-4">
+                <!-- Card 1 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">أم علي بالمكسرات والقشطة</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">60 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">ساخنة وغرقانة في الحليب واللبن.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(أم%20علي%20بالمكسرات%20والقشطة)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="menu-card bg-neutral-900/90 hover:bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="item-name text-lg font-bold text-neutral-100 group-hover:text-red-400 transition-colors">كنافة نابلسية بالجبنة</h3>
+                            <span class="item-price text-red-500 font-extrabold text-base whitespace-nowrap bg-red-950/40 px-2.5 py-1 rounded-md border border-red-900/30">70 ج.م</span>
+                        </div>
+                        <p class="item-desc text-xs md:text-sm text-neutral-400 leading-relaxed mb-4">مقرمشة من بره وسايحة وجبنتها تمط من جوه.</p>
+                    </div>
+                    <a href="https://wa.me/201022734368?text=السلام%20عليكم،%20حابب%20أطلب%20(كنافة%20نابلسية%20بالجبنة)%20من%20مطعم%20MIMO" 
+                       target="_blank" 
+                       class="inline-flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition-all duration-200 mt-auto">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>اطلب الآن واتساب</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-neutral-800 py-6 text-center text-xs text-neutral-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-red-500 text-sm">MIMO</span>
+                <span>• جميع الحقوق محفوظة © 2026</span>
+            </div>
+            <p>تم التصميم بأعلى معايير الجودة والسرعة 🚀</p>
+        </div>
+    </footer>
+
+    <!-- Interactive JavaScript Logic -->
+    <script>
+        function filterMenu() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.trim().toLowerCase();
+            const cards = document.getElementsByClassName('menu-card');
+            const categories = document.getElementsByClassName('menu-category');
+            const clearBtn = document.getElementById('clearSearch');
+            const searchStats = document.getElementById('searchStats');
+            const searchQueryText = document.getElementById('searchQueryText');
+            const resultsCount = document.getElementById('resultsCount');
+            const noResults = document.getElementById('noResults');
+
+            let visibleCardsCount = 0;
+
+            // Toggle clear button
+            if (filter.length > 0) {
+                clearBtn.classList.remove('hidden');
+                searchStats.classList.remove('hidden');
+                searchQueryText.textContent = input.value;
+            } else {
+                clearBtn.classList.add('hidden');
+                searchStats.classList.add('hidden');
+            }
+
+            // Loop through each card
+            for (let i = 0; i < cards.length; i++) {
+                const card = cards[i];
+                const name = card.querySelector('.item-name').textContent.toLowerCase();
+                const desc = card.querySelector('.item-desc').textContent.toLowerCase();
+
+                if (name.includes(filter) || desc.includes(filter)) {
+                    card.style.display = "flex";
+                    visibleCardsCount++;
+                } else {
+                    card.style.display = "none";
+                }
+            }
+
+            // Hide/Show section header if all cards inside it are hidden
+            for (let j = 0; j < categories.length; j++) {
+                const category = categories[j];
+                const visibleInCat = category.querySelectorAll('.menu-card[style*="display: flex"]');
+                
+                if (filter !== "" && visibleInCat.length === 0) {
+                    category.style.display = "none";
+                } else {
+                    category.style.display = "block";
+                }
+            }
+
+            // Update stats & show noResults message if empty
+            if (filter.length > 0) {
+                resultsCount.textContent = `(${visibleCardsCount} وجبة متبقية)`;
+                if (visibleCardsCount === 0) {
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                }
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+
+        function resetSearch() {
+            const input = document.getElementById('searchInput');
+            input.value = '';
+            filterMenu();
+            input.focus();
+        }
+    </script>
+
+</body>
+</html>
